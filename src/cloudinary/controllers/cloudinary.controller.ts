@@ -18,7 +18,7 @@ export class CloudinaryController {
         @Body('public_id') public_id: string,
     ) {
         return {
-            data: await this.cloudinaryService.uploadImage(file, public_id)
+            message: await this.cloudinaryService.uploadImage(file, public_id)
         }
     }
 }
