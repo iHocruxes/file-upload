@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
-import { cloudinaryOption } from 'src/config/database.config';
+import { cloudinaryOption } from '../../config/database.config';
 
 const toStream = require('buffer-to-stream')
 

@@ -3,8 +3,8 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHideProperty, ApiOperation, Api
 import { CloudinaryService } from "../services/cloudinary.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { createReadStream } from "fs";
-import { DoctorGuard } from "src/auth/guards/doctor.guard";
-import { UserGuard } from "src/auth/guards/user.guard";
+import { DoctorGuard } from "../../auth/guards/doctor.guard";
+import { UserGuard } from "../../auth/guards/user.guard";
 
 @ApiTags('CLOUDINARY')
 @Controller('avatar')
