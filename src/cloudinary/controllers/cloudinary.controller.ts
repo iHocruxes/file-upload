@@ -17,8 +17,7 @@ export class CloudinaryController {
         @UploadedFile() file: Express.Multer.File,
         @Body('public_id') public_id: string,
     ) {
-        return {
-            message: await this.cloudinaryService.uploadImage(file, public_id)
-        }
+        return await this.cloudinaryService.uploadImage(file, public_id)
+
     }
 }

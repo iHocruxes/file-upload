@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
-import * as fs from 'fs'
+import { resolve } from 'path';
+const toStream = require('buffer-to-stream')
 
 dotenv.config();
 
@@ -17,26 +18,18 @@ export class CloudinaryService {
     }
 
     async uploadImage(file: Express.Multer.File, public_id: string) {
-        const upload = await cloudinary.uploader.upload(file.path, {
-            upload_preset: 'doctor_avatar',
-            public_id: public_id,
-            api_key: process.env.CLOUDINARY_API_KEY,
-        })
 
-        await this.deleteFile(file.path)
-
-        return "successfully"
-    }
-
-    async deleteFile(filePath: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            fs.unlink(filePath, (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
+            const upload = cloudinary.uploader.upload_stream({
+                public_id: public_id,
+                overwrite: true,
+                folder: '/doctor/avatar'
+            }, (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
             });
-        })
+
+            toStream(file.buffer).pipe(upload);
+        });
     }
 }
