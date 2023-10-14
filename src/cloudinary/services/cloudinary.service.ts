@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
-import { resolve } from 'path';
+import { cloudinaryOption } from 'src/config/database.config';
+
 const toStream = require('buffer-to-stream')
 
 dotenv.config();
@@ -10,22 +11,22 @@ dotenv.config();
 export class CloudinaryService {
     constructor() {
         cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_SECRET_KEY,
-            secure: true
+            ...cloudinaryOption
         });
     }
 
-    async uploadImage(file: Express.Multer.File, public_id: string) {
-
+    async uploadImage(file: Express.Multer.File, public_id: string, folder: string) {
         return new Promise((resolve, reject) => {
             const upload = cloudinary.uploader.upload_stream({
                 public_id: public_id,
                 overwrite: true,
-                folder: '/doctor/avatar'
+                folder: folder,
+                resource_type: 'image'
+
             }, (error, result) => {
-                if (error) return reject(error);
+                if (error) {
+                    return reject(new BadRequestException('invalid_image_file'))
+                };
                 resolve(result);
             });
 

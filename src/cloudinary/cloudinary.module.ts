@@ -4,7 +4,6 @@ import { CloudinaryController } from './controllers/cloudinary.controller';
 
 @Module({
     imports: [
-
     ],
     controllers: [CloudinaryController],
     providers: [CloudinaryService]
