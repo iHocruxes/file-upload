@@ -15,7 +15,7 @@ export class CloudinaryController {
 
     @UseGuards(DoctorGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'thêm, cập nhật avatar cho bác sĩ' })
+    @ApiOperation({ summary: 'thêm, cập nhật avatar cho bác sĩ', description: '/healthline/doctors/:id/:avatar' })
     @ApiConsumes('multipart/form-data')
     @ApiResponse({ status: 201, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'file và public_id phải được truyền vào, file bắt buộc phải là dạng image' })
@@ -47,12 +47,12 @@ export class CloudinaryController {
         if (!file)
             throw new BadRequestException('file_required')
 
-        return await this.cloudinaryService.uploadImage(file, 'avatar', '/healthline/doctors/' + req.user.id + '/avatar')
+        return await this.cloudinaryService.uploadImage(file, 'avatar', '/healthline/doctors/' + req.user.id)
     }
 
     @UseGuards(UserGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'thêm, cập nhật avatar cho hồ sơ người dùng' })
+    @ApiOperation({ summary: 'thêm, cập nhật avatar cho hồ sơ người dùng', description: '/heathline/users/:id/avatars/:avatar' })
     @ApiConsumes('multipart/form-data')
     @ApiResponse({ status: 201, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'file và public_id phải được truyền vào, file bắt buộc phải là dạng image' })
@@ -87,7 +87,7 @@ export class CloudinaryController {
 
     @UseGuards(UserGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'thêm, cập nhật medical_record cho hồ sơ người dùng' })
+    @ApiOperation({ summary: 'thêm, cập nhật medical_record cho hồ sơ người dùng', description: '/healhtline/users/:id/records/:record' })
     @ApiConsumes('multipart/form-data')
     @ApiResponse({ status: 201, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'file và public_id phải được truyền vào, file bắt buộc phải là dạng image' })
