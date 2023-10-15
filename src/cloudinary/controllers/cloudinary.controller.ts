@@ -1,4 +1,4 @@
-import { Controller, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException } from "@nestjs/common";
+import { Controller, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHideProperty, ApiOperation, ApiParam, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CloudinaryService } from "../services/cloudinary.service";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -92,14 +92,20 @@ export class CloudinaryController {
                 file: {
                     type: 'file',
                     format: 'binary',
-                    description: 'file ảnh upload',
+                    description: 'file upload',
 
                 },
                 public_id: {
                     type: 'string',
                     format: 'string',
-                    description: 'đặt tên cho file ảnh',
+                    description: 'đặt tên cho file',
                     nullable: false
+                },
+                folder: {
+                    type: 'string',
+                    format: 'string',
+                    description: 'đặt tên cho folder',
+                    nullable: true
                 }
             },
         },
@@ -109,8 +115,38 @@ export class CloudinaryController {
     async uploadUserRecord(
         @UploadedFile() file: Express.Multer.File,
         @Body('public_id') public_id: string,
+        @Body('folder') folder: string,
         @Req() req
     ) {
-        return await this.cloudinaryService.uploadFile(file, public_id, '/healthline/users/' + req.user.id + '/records')
+        if (!folder)
+            folder = '/default'
+        else
+            folder = '/' + folder
+
+        console.log(public_id)
+
+        return await this.cloudinaryService.uploadFile(file, public_id, '/healthline/users/' + req.user.id + '/records' + folder)
+    }
+
+    @UseGuards(UserGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'thêm, cập nhật medical_record cho hồ sơ người dùng', description: '/healhtline/users/:id/records/:record' })
+    @ApiConsumes('multipart/form-data')
+    @ApiResponse({ status: 201, description: 'Thành công' })
+    @ApiResponse({ status: 400, description: 'file và public_id phải được truyền vào, file bắt buộc phải là dạng image' })
+    @Delete('user/record/:public_id')
+    async deleteUserRecord(
+        @Param('public_id') public_id: string,
+        @Param('folder') folder: string,
+        @Req() req
+    ) {
+        if (!folder)
+            folder = '/default'
+        else
+            folder = '/' + folder
+
+        const path = 'healthline/users/' + req.user.id + '/records' + folder + '/' + public_id
+
+        return await this.cloudinaryService.deleteFile(path)
     }
 }

@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
 import { cloudinaryOption } from '../../config/database.config';
+import { error } from 'console';
 
 const toStream = require('buffer-to-stream')
 
@@ -53,5 +54,8 @@ export class CloudinaryService {
         });
     }
 
+    async deleteFile(public_id: string) {
+        return await cloudinary.uploader.destroy(public_id)
+    }
 
 }
