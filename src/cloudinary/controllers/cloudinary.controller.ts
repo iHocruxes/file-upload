@@ -130,11 +130,24 @@ export class CloudinaryController {
 
     @UseGuards(UserGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'thêm, cập nhật medical_record cho hồ sơ người dùng', description: '/healhtline/users/:id/records/:record' })
-    @ApiConsumes('multipart/form-data')
-    @ApiResponse({ status: 201, description: 'Thành công' })
-    @ApiResponse({ status: 400, description: 'file và public_id phải được truyền vào, file bắt buộc phải là dạng image' })
-    @Delete('user/record/:public_id')
+    @Delete('user/record/:folder')
+    async deleteUserFolder(
+        @Param('folder') folder: string,
+        @Req() req
+    ) {
+        if (!folder)
+            folder = '/default'
+        else
+            folder = '/' + folder
+
+        const path = 'healthline/users/' + req.user.id + '/records' + folder
+
+        return await this.cloudinaryService.deleteFolder(path)
+    }
+
+    @UseGuards(UserGuard)
+    @ApiBearerAuth()
+    @Delete('user/record/:folder/:public_id')
     async deleteUserRecord(
         @Param('public_id') public_id: string,
         @Param('folder') folder: string,

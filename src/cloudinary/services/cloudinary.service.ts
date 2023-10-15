@@ -58,4 +58,9 @@ export class CloudinaryService {
         return await cloudinary.uploader.destroy(public_id)
     }
 
+    async deleteFolder(folder: string) {
+        await cloudinary.api.delete_resources_by_prefix(folder)
+        return await cloudinary.api.delete_folder(folder)
+    }
+
 }
