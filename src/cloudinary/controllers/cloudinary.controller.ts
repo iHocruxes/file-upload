@@ -29,12 +29,6 @@ export class CloudinaryController {
                     description: 'file ảnh upload',
 
                 },
-                public_id: {
-                    type: 'string',
-                    format: 'string',
-                    description: 'đặt tên cho file ảnh',
-                    nullable: false
-                }
             },
         },
     })
