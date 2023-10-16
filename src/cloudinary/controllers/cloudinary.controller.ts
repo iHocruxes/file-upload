@@ -114,7 +114,6 @@ export class CloudinaryController {
     @UseInterceptors(FileInterceptor('file'))
     async uploadUserRecord(
         @UploadedFile() file: Express.Multer.File,
-        @Body('public_id') public_id: string,
         @Body('folder') folder: string,
         @Req() req
     ) {
@@ -123,9 +122,7 @@ export class CloudinaryController {
         else
             folder = '/' + folder
 
-        console.log(public_id)
-
-        return await this.cloudinaryService.uploadFile(file, public_id, '/healthline/users/' + req.user.id + '/records' + folder)
+        return await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records' + folder)
     }
 
     @UseGuards(UserGuard)

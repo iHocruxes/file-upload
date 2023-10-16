@@ -22,8 +22,8 @@ export class CloudinaryService {
                 public_id: public_id,
                 overwrite: true,
                 folder: folder,
-                resource_type: 'image'
-
+                resource_type: 'image',
+                invalidate: true
             }, (error, result) => {
                 if (error) {
                     return reject(new BadRequestException('invalid_image_file'))
@@ -35,14 +35,13 @@ export class CloudinaryService {
         });
     }
 
-    async uploadFile(file: Express.Multer.File, public_id: string, folder: string) {
+    async uploadFile(file: Express.Multer.File, folder: string) {
         return new Promise((resolve, reject) => {
             const upload = cloudinary.uploader.upload_stream({
-                public_id: public_id,
                 overwrite: true,
                 folder: folder,
-                resource_type: 'auto'
-
+                resource_type: 'auto',
+                use_filename: true
             }, (error, result) => {
                 if (error) {
                     return reject(error)
