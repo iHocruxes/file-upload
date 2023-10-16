@@ -95,12 +95,6 @@ export class CloudinaryController {
                     description: 'file upload',
 
                 },
-                public_id: {
-                    type: 'string',
-                    format: 'string',
-                    description: 'đặt tên cho file',
-                    nullable: false
-                },
                 folder: {
                     type: 'string',
                     format: 'string',
