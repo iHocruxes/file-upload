@@ -38,10 +38,9 @@ export class CloudinaryService {
     async uploadFile(file: Express.Multer.File, folder: string) {
         return new Promise((resolve, reject) => {
             const upload = cloudinary.uploader.upload_stream({
+                public_id: file.filename,
                 folder: folder,
                 resource_type: 'auto',
-                use_filename: true,
-                unique_filename: false,
             }, (error, result) => {
                 if (error) {
                     return reject(error)
