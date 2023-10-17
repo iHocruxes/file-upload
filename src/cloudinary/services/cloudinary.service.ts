@@ -41,7 +41,7 @@ export class CloudinaryService {
                 folder: folder,
                 resource_type: 'auto',
                 use_filename: true,
-                unique_filename: true,
+                unique_filename: false,
             }, (error, result) => {
                 if (error) {
                     return reject(error)
