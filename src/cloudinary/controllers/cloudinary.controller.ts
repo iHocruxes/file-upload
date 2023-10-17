@@ -41,7 +41,14 @@ export class CloudinaryController {
         if (!file)
             throw new BadRequestException('file_required')
 
-        return await this.cloudinaryService.uploadImage(file, 'avatar', '/healthline/doctors/' + req.user.id)
+        const size = await this.cloudinaryService.convertByte(file.size)
+
+        const data = await this.cloudinaryService.uploadImage(file, 'avatar', '/healthline/doctors/' + req.user.id)
+
+        return {
+            data,
+            size
+        }
     }
 
     @UseGuards(UserGuard)
@@ -76,7 +83,13 @@ export class CloudinaryController {
         @Body('public_id') public_id: string,
         @Req() req
     ) {
-        return await this.cloudinaryService.uploadImage(file, public_id, '/healthline/users/' + req.user.id + '/avatars')
+        const data = await this.cloudinaryService.uploadImage(file, public_id, '/healthline/users/' + req.user.id + '/avatars')
+        const size = await this.cloudinaryService.convertByte(file.size)
+
+        return {
+            data,
+            size
+        }
     }
 
     @UseGuards(UserGuard)
@@ -111,12 +124,20 @@ export class CloudinaryController {
         @Body('folder') folder: string,
         @Req() req
     ) {
+        const size = await this.cloudinaryService.convertByte(file.size)
+
         if (!folder)
             folder = '/default'
         else
             folder = '/' + folder
 
-        return await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records' + folder)
+        const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records' + folder)
+
+        return {
+            data,
+            size
+        }
+
     }
 
     @UseGuards(UserGuard)
