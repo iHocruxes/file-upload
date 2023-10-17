@@ -121,6 +121,7 @@ export class CloudinaryController {
 
     @UseGuards(UserGuard)
     @ApiBearerAuth()
+    @ApiOperation({ summary: 'xóa thư mục và tất cả tài liệu trong medical_record của người dùng' })
     @Delete('user/record/:folder')
     async deleteUserFolder(
         @Param('folder') folder: string,
@@ -138,6 +139,7 @@ export class CloudinaryController {
 
     @UseGuards(UserGuard)
     @ApiBearerAuth()
+    @ApiOperation({ summary: 'Xóa tài liệu từ thư mục trong medical_record' })
     @Delete('user/record/:folder/:public_id')
     async deleteUserRecord(
         @Param('public_id') public_id: string,
