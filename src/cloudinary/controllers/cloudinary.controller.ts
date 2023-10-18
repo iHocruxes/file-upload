@@ -83,6 +83,8 @@ export class CloudinaryController {
         @Body('public_id') public_id: string,
         @Req() req
     ) {
+        await this.cloudinaryService.slashFolder(public_id)
+
         const data = await this.cloudinaryService.uploadImage(file, public_id, '/healthline/users/' + req.user.id + '/avatars')
         const size = await this.cloudinaryService.convertByte(file.size)
 
@@ -124,14 +126,16 @@ export class CloudinaryController {
         @Body('folder') folder: string,
         @Req() req
     ) {
+
         const size = await this.cloudinaryService.convertByte(file.size)
 
         if (!folder)
             folder = '/default'
-        else
+        else {
+            await this.cloudinaryService.slashFolder(folder)
             folder = '/' + folder
+        }
 
-        this.cloudinaryService.slashFolder(folder)
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records' + folder)
 
@@ -152,10 +156,10 @@ export class CloudinaryController {
     ) {
         if (!folder)
             folder = '/default'
-        else
+        else {
+            await this.cloudinaryService.slashFolder(folder)
             folder = '/' + folder
-
-        this.cloudinaryService.slashFolder(folder)
+        }
 
         const path = 'healthline/users/' + req.user.id + '/records' + folder
 
@@ -171,12 +175,14 @@ export class CloudinaryController {
         @Param('folder') folder: string,
         @Req() req
     ) {
+        await this.cloudinaryService.slashFolder(public_id)
+
         if (!folder)
             folder = '/default'
-        else
+        else {
+            await this.cloudinaryService.slashFolder(folder)
             folder = '/' + folder
-
-        this.cloudinaryService.slashFolder(folder)
+        }
 
         const path = 'healthline/users/' + req.user.id + '/records' + folder + '/' + public_id
 
