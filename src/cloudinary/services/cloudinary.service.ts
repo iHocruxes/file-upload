@@ -79,7 +79,7 @@ export class CloudinaryService {
     async slashFolder(folder: string) {
         const slash = folder.includes('/') ? true : false
         if (slash)
-            throw new BadRequestException('spash_found')
+            throw new BadRequestException('slash_found')
         return 0
     }
 }
