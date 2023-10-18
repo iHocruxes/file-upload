@@ -131,6 +131,8 @@ export class CloudinaryController {
         else
             folder = '/' + folder
 
+        this.cloudinaryService.slashFolder(folder)
+
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records' + folder)
 
         return {
@@ -153,6 +155,8 @@ export class CloudinaryController {
         else
             folder = '/' + folder
 
+        this.cloudinaryService.slashFolder(folder)
+
         const path = 'healthline/users/' + req.user.id + '/records' + folder
 
         return await this.cloudinaryService.deleteFolder(path)
@@ -171,6 +175,8 @@ export class CloudinaryController {
             folder = '/default'
         else
             folder = '/' + folder
+
+        this.cloudinaryService.slashFolder(folder)
 
         const path = 'healthline/users/' + req.user.id + '/records' + folder + '/' + public_id
 
