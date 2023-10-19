@@ -41,14 +41,9 @@ export class CloudinaryController {
         if (!file)
             throw new BadRequestException('file_required')
 
-        const size = await this.cloudinaryService.convertByte(file.size)
-
         const data = await this.cloudinaryService.uploadImage(file, 'avatar', '/healthline/doctors/' + req.user.id)
 
-        return {
-            data,
-            size
-        }
+        return data
     }
 
     @UseGuards(UserGuard)
@@ -86,12 +81,8 @@ export class CloudinaryController {
         await this.cloudinaryService.slashFolder(public_id)
 
         const data = await this.cloudinaryService.uploadImage(file, public_id, '/healthline/users/' + req.user.id + '/avatars')
-        const size = await this.cloudinaryService.convertByte(file.size)
 
-        return {
-            data,
-            size
-        }
+        return data
     }
 
     @UseGuards(UserGuard)
@@ -126,9 +117,6 @@ export class CloudinaryController {
         @Body('folder') folder: string,
         @Req() req
     ) {
-
-        const size = await this.cloudinaryService.convertByte(file.size)
-
         if (!folder)
             folder = '/default'
         else {
@@ -139,10 +127,7 @@ export class CloudinaryController {
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records' + folder)
 
-        return {
-            data,
-            size
-        }
+        return data
 
     }
 
