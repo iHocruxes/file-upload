@@ -117,13 +117,13 @@ export class CloudinaryController {
         @Body('folder') folder: string,
         @Req() req
     ) {
+
         if (!folder)
             folder = '/default'
         else {
             await this.cloudinaryService.slashFolder(folder)
             folder = '/' + folder
         }
-
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records' + folder)
 
@@ -147,7 +147,6 @@ export class CloudinaryController {
         }
 
         const path = 'healthline/users/' + req.user.id + '/records' + folder
-
         return await this.cloudinaryService.deleteFolder(path)
     }
 
@@ -170,7 +169,6 @@ export class CloudinaryController {
         }
 
         const path = 'healthline/users/' + req.user.id + '/records' + folder + '/' + public_id
-
         return await this.cloudinaryService.deleteFile(path)
     }
 }

@@ -60,20 +60,19 @@ export class CloudinaryService {
     }
 
     async deleteFolder(folder: string) {
-        await cloudinary.api.delete_resources_by_prefix(folder)
-        return await cloudinary.api.delete_folder(folder)
-    }
+        await cloudinary.api.delete_resources_by_prefix(folder, {
+            resource_type: 'video'
+        })
 
-    async convertByte(size: number) {
-        if (size >= 1024 * 1024) { // Nếu kích thước lớn hơn hoặc bằng 1 MB
-            const sizeInMB = (size / (1024 * 1024)).toFixed(2); // Chuyển đổi thành MB với 2 chữ số thập phân
-            return sizeInMB + ' MB';
-        } else if (size >= 1024) { // Nếu kích thước lớn hơn hoặc bằng 1 KB
-            const sizeInKB = (size / 1024).toFixed(2); // Chuyển đổi thành KB với 2 chữ số thập phân
-            return sizeInKB + ' KB';
-        } else {
-            return size + ' byte';
-        }
+        await cloudinary.api.delete_resources_by_prefix(folder, {
+            resource_type: 'image'
+        })
+
+        await cloudinary.api.delete_resources_by_prefix(folder, {
+            resource_type: 'raw'
+        })
+
+        return await cloudinary.api.delete_folder(folder)
     }
 
     async slashFolder(folder: string) {
