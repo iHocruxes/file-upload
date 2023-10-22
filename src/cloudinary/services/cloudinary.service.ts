@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
 import { cloudinaryOption } from '../../config/database.config';
-import { error } from 'console';
 
 const toStream = require('buffer-to-stream')
 
@@ -10,7 +9,8 @@ dotenv.config();
 
 @Injectable()
 export class CloudinaryService {
-    constructor() {
+    constructor(
+    ) {
         cloudinary.config({
             ...cloudinaryOption
         });

@@ -4,12 +4,14 @@ import { CloudinaryService } from "../services/cloudinary.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UserGuard } from "../../auth/guards/user.guard";
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
     constructor(
-        private readonly cloudinaryService: CloudinaryService
+        private readonly cloudinaryService: CloudinaryService,
+        private readonly amqpConnection: AmqpConnection
     ) { }
 
 
@@ -119,14 +121,19 @@ export class CloudinaryController {
     ) {
 
         if (!folder)
-            folder = '/default'
+            folder = 'default'
         else {
             await this.cloudinaryService.slashFolder(folder)
-            folder = '/' + folder
         }
 
-        const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records' + folder)
+        const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
 
+        const rabbimq = await this.amqpConnection.request({
+            exchange: 'healthline.upload.folder',
+            routingKey: 'upload',
+            payload: { data, user: req.user.id, folder: folder },
+            timeout: 100000
+        })
         return data
 
     }
