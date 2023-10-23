@@ -128,7 +128,7 @@ export class CloudinaryController {
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
 
-        const rabbimq = await this.amqpConnection.request({
+        const rabbimq = this.amqpConnection.request({
             exchange: 'healthline.upload.folder',
             routingKey: 'upload',
             payload: { data, user: req.user.id, folder: folder },
