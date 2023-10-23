@@ -4,14 +4,14 @@ import { CloudinaryService } from "../services/cloudinary.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UserGuard } from "../../auth/guards/user.guard";
-import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { ClientProxy } from "@nestjs/microservices";
 
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
     constructor(
         private readonly cloudinaryService: CloudinaryService,
-        private readonly amqpConnection: AmqpConnection
+        private readonly client: ClientProxy
     ) { }
 
 
@@ -128,11 +128,11 @@ export class CloudinaryController {
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
 
-        const rabbimq = await this.amqpConnection.publish(
-            'healthline.upload.folder',
-            'upload',
-            { data, user: req.user.id, folder: folder }
-        )
+        // const rabbimq = await this.amqpConnection.publish(
+        //     'healthline.upload.folder',
+        //     'upload',
+        //     { data, user: req.user.id, folder: folder }
+        // )
         return data
 
     }
@@ -176,5 +176,11 @@ export class CloudinaryController {
 
         const path = 'healthline/users/' + req.user.id + '/records' + folder + '/' + public_id
         return await this.cloudinaryService.deleteFile(path)
+    }
+
+    @Put('test')
+    async test() {
+        const result = await this.client.send<any>('haha', { "one": true, "two": "data" }).toPromise()
+        console.log(result)
     }
 }
