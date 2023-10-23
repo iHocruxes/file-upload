@@ -1,4 +1,4 @@
-import { Controller, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param } from "@nestjs/common";
+import { Controller, Inject, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHideProperty, ApiOperation, ApiParam, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CloudinaryService } from "../services/cloudinary.service";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -11,7 +11,7 @@ import { ClientProxy } from "@nestjs/microservices";
 export class CloudinaryController {
     constructor(
         private readonly cloudinaryService: CloudinaryService,
-        private readonly client: ClientProxy
+        @Inject('MATH_SERVICE') private readonly client: ClientProxy
     ) { }
 
 
@@ -181,6 +181,6 @@ export class CloudinaryController {
     @Put('test')
     async test() {
         const result = await this.client.send<any>('haha', { "one": true, "two": "data" }).toPromise()
-        console.log(result)
+        return result
     }
 }
