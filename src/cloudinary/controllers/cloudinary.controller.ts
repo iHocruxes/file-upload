@@ -5,13 +5,16 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UserGuard } from "../../auth/guards/user.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { HttpService } from "@nestjs/axios";
+import { firstValueFrom } from "rxjs";
 
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
     constructor(
         private readonly cloudinaryService: CloudinaryService,
-        private readonly amqpConnection: AmqpConnection
+        private readonly amqpConnection: AmqpConnection,
+        private readonly httpService: HttpService
     ) { }
 
 
@@ -118,7 +121,7 @@ export class CloudinaryController {
         @UploadedFile() file: Express.Multer.File,
         @Body('folder') folder: string,
         @Req() req
-    ) {
+    ): Promise<any> {
 
         if (!folder)
             folder = 'default'
@@ -127,14 +130,23 @@ export class CloudinaryController {
         }
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
-
+        
         const rabbimq = await this.amqpConnection.publish(
             'healthline.upload.folder',
             'upload',
             { data, user: req.user.id, folder: folder }
         )
-        return data
 
+        // const url = 'https://apis.healthline.vn/patient-record/record/amqp'
+        // // const { data } = await firstValueFrom(this.httpService.post(url))
+        // // return data
+        // let connect
+        // do {
+        //     const { data } = firstValueFrom(this.httpService.post(url))
+        //     connect = data
+        // } while (connect !== 'amqp connected');
+
+        return data
     }
 
     @UseGuards(UserGuard)
