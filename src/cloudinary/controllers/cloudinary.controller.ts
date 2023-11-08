@@ -138,6 +138,9 @@ export class CloudinaryController {
             'upload',
             { data, user: req.user.id, folder: folder }
         )
+        if(rabbimq)
+            return true
+        return false
 
         const url = 'https://apis.healthline.vn/patient-record/record/amqp'
         let connect
