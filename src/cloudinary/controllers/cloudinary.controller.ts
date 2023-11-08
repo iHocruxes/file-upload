@@ -7,6 +7,7 @@ import { UserGuard } from "../../auth/guards/user.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
+import axios from "axios";
 
 @ApiTags('CLOUDINARY')
 @Controller()
@@ -115,6 +116,7 @@ export class CloudinaryController {
             },
         },
     })
+
     @Put('user/record')
     @UseInterceptors(FileInterceptor('file'))
     async uploadUserRecord(
@@ -137,14 +139,14 @@ export class CloudinaryController {
             { data, user: req.user.id, folder: folder }
         )
 
-        // const url = 'https://apis.healthline.vn/patient-record/record/amqp'
-        // // const { data } = await firstValueFrom(this.httpService.post(url))
-        // // return data
-        // let connect
-        // do {
-        //     const { data } = firstValueFrom(this.httpService.post(url))
-        //     connect = data
-        // } while (connect !== 'amqp connected');
+        const url = 'https://apis.healthline.vn/patient-record/record/amqp'
+        let connect
+        do {
+            await axios.post(url)
+            .then(response => {
+                connect = response.data;
+            })
+        } while(connect !== true)
 
         return data
     }
