@@ -133,14 +133,11 @@ export class CloudinaryController {
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
         
-        const rabbimq = await this.amqpConnection.publish(
+        await this.amqpConnection.publish(
             'healthline.upload.folder',
             'upload',
             { data, user: req.user.id, folder: folder }
         )
-        if(rabbimq)
-            return true
-        return false
 
         const url = 'https://apis.healthline.vn/patient-record/record/amqp'
         let connect
