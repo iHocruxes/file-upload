@@ -139,15 +139,15 @@ export class CloudinaryController {
             { data, user: req.user.id, folder: folder }
         )
 
-        // const url = 'https://apis.healthline.vn/patient-record/record/amqp'
-        // let connect
-        // do {
-        //     await axios.post(url)
-        //     .then(response => {
-        //         connect = response.data;
-        //         console.log(connect)
-        //     })
-        // } while(connect !== true)
+        const url = 'https://apis.healthline.vn/patient-record/record/amqp'
+        let connect
+        do {
+            await axios.post(url)
+            .then(response => {
+                connect = response.data;
+                console.log(connect)
+            })
+        } while(connect !== true)
 
         return data
     }
