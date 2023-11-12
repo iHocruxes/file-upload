@@ -145,6 +145,7 @@ export class CloudinaryController {
             await axios.post(url)
             .then(response => {
                 connect = response.data;
+                console.log(connect)
             })
         } while(connect !== true)
 
