@@ -133,7 +133,7 @@ export class CloudinaryController {
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
         
-        await this.amqpConnection.publish(
+        const amqp = await this.amqpConnection.publish(
             'healthline.upload.folder',
             'upload',
             { data, user: req.user.id, folder: folder }
