@@ -133,11 +133,11 @@ export class CloudinaryController {
 
         const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
         
-        // await this.amqpConnection.publish(
-        //     'healthline.upload.folder',
-        //     'upload',
-        //     { data, user: req.user.id, folder: folder }
-        // )
+        const amqp = await this.amqpConnection.publish(
+            'healthline.upload.folder',
+            'upload',
+            { data, user: req.user.id, folder: folder }
+        )
 
         const url = 'https://apis.healthline.vn/patient-record/record/amqp'
         let connect
@@ -145,6 +145,7 @@ export class CloudinaryController {
             await axios.post(url)
             .then(response => {
                 connect = response.data;
+                console.log(connect)
             })
         } while(connect !== true)
 
