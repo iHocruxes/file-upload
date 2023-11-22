@@ -5,6 +5,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UserGuard } from "../../auth/guards/user.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { FolderDto } from "../dtos/folder.dto";
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
@@ -127,7 +128,7 @@ export class CloudinaryController {
             await this.cloudinaryService.slashFolder(folder)
         }
 
-        const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
+        const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + medicalId + '/' + folder)
 
         const rabbit = await this.amqpConnection.request<any>({
             exchange: 'healthline.upload.folder',
@@ -139,23 +140,18 @@ export class CloudinaryController {
         return rabbit
     }
 
-    // @UseGuards(UserGuard)
-    // @ApiBearerAuth()
-    // @ApiOperation({ summary: 'xóa thư mục và tất cả tài liệu trong medical_record của người dùng' })
-    // @Delete('user/record/:folder')
-    // async deleteUserFolder(
-    //     @Param('folder') folder: string,
-    //     @Req() req
-    // ) {
-    //     // if (!folder)
-    //     //     folder = '/default'
-    //     // else {
-    //     //     await this.cloudinaryService.slashFolder(folder)
-    //     //     folder = '/' + folder
-    //     // }
+    @UseGuards(UserGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'xóa thư mục và tất cả tài liệu trong medical_record của người dùng' })
+    @Delete('/user/record')
+    async deleteUserFolder(
+        @Body() dto: FolderDto,
+        @Req() req
+    ) {
+        await this.cloudinaryService.slashFolder(dto.folder)
 
-    //     // const path = 'healthline/users/' + req.user.id + '/records/' + folder
-    //     return await this.cloudinaryService.deleteFolder(folder)
-    // }
+        const path = 'healthline/users/' + req.user.id + '/records/' + dto.medicalId + '/' + dto.folder
+        return await this.cloudinaryService.deleteFolder(path)
+    }
 
 }
