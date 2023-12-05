@@ -1,4 +1,4 @@
-import { Controller, Inject, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param } from "@nestjs/common";
+import { Controller, Inject, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param, Post, Patch } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHideProperty, ApiOperation, ApiParam, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CloudinaryService } from "../services/cloudinary.service";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -6,6 +6,7 @@ import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UserGuard } from "../../auth/guards/user.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { FolderDto } from "../dtos/folder.dto";
+import { BlogDto } from "../dtos/blog.dto";
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
@@ -134,6 +135,31 @@ export class CloudinaryController {
             exchange: 'healthline.upload.folder',
             routingKey: 'upload',
             payload: { data, user: req.user.id, folder: folder, medicalId: medicalId },
+            timeout: 10000,
+        })
+
+        return rabbit
+    }
+
+    @Patch('blog')
+    @UseInterceptors(FileInterceptor('file'))
+    async addNewBlog(
+        @UploadedFile() file: Express.Multer.File,
+        @Body('dto') dto: BlogDto,
+    ): Promise<any> {
+        if(dto.id === "" && !file) {
+            throw new BadRequestException("image_not_null")
+        } else if(dto.id !== "" && !file) {
+            dto.photo = ""
+        } else {
+            const data = await this.cloudinaryService.uploadFile(file, '/healthline/blog')
+            dto.photo = (data as any).public_id || ""
+        }
+
+        const rabbit = await this.amqpConnection.request<any>({
+            exchange: 'healthline.upload.folder',
+            routingKey: 'upload_blog',
+            payload: { dto: dto },
             timeout: 10000,
         })
 

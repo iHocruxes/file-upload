@@ -25,4 +25,21 @@ export class CloudinaryConsumer {
             "message": "success"
         }
     }
+
+    @RabbitRPC({
+        exchange: 'healthline.upload.folder',
+        routingKey: 'delete_blog', 
+        queue: 'delete_blog',
+    })
+    async deleteImageBlog(public_id: string): Promise<any> {
+        if(await this.cloudinaryService.deleteFile(public_id) === false)
+            return {
+                "code": 400,
+                "message": "delete_patient_record_failed",
+            }
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
 }
