@@ -163,7 +163,7 @@ export class CloudinaryController {
         const rabbit = await this.amqpConnection.request<any>({
             exchange: 'healthline.upload.folder',
             routingKey: 'upload_blog',
-            payload: { dto: blog },
+            payload: blog,
             timeout: 10000,
         })
 
