@@ -157,13 +157,13 @@ export class CloudinaryController {
             blog.photo = ""
         } else {
             const data = await this.cloudinaryService.uploadFile(file, '/healthline/blog')
-            dto.photo = (data as any).public_id || ""
+            blog.photo = (data as any).public_id || ""
         }
 
         const rabbit = await this.amqpConnection.request<any>({
             exchange: 'healthline.upload.folder',
             routingKey: 'upload_blog',
-            payload: { dto: dto },
+            payload: { dto: blog },
             timeout: 10000,
         })
 
