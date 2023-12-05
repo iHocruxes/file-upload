@@ -145,12 +145,16 @@ export class CloudinaryController {
     @UseInterceptors(FileInterceptor('file'))
     async addNewBlog(
         @UploadedFile() file: Express.Multer.File,
-        @Body('dto') dto: BlogDto,
+        @Body('dto') dto: any,
     ): Promise<any> {
-        if(dto.id === "" && !file) {
+        const blog: BlogDto = JSON.parse(dto)
+        if(blog.title == "" || blog.content == "" || !blog.title || !blog.content)
+            throw new BadRequestException("title_or_content_not_null")
+
+        if((blog.id === "" || !blog.id) && !file) {
             throw new BadRequestException("image_not_null")
-        } else if(dto.id !== "" && !file) {
-            dto.photo = ""
+        } else if(blog.id !== "" && !file) {
+            blog.photo = ""
         } else {
             const data = await this.cloudinaryService.uploadFile(file, '/healthline/blog')
             dto.photo = (data as any).public_id || ""
