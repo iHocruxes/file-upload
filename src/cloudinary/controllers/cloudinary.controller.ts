@@ -141,7 +141,7 @@ export class CloudinaryController {
         return rabbit
     }
 
-    @Patch('blog')
+    @Put('blog')
     @UseInterceptors(FileInterceptor('file'))
     async addNewBlog(
         @UploadedFile() file: Express.Multer.File,
