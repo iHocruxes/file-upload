@@ -1,11 +1,12 @@
-import { Controller, Inject, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param } from "@nestjs/common";
+import { Controller, Inject, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param, Post, Patch } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHideProperty, ApiOperation, ApiParam, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CloudinaryService } from "../services/cloudinary.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UserGuard } from "../../auth/guards/user.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-
+import { FolderDto } from "../dtos/folder.dto";
+import { BlogDto } from "../dtos/blog.dto";
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
@@ -118,6 +119,7 @@ export class CloudinaryController {
     async uploadUserRecord(
         @UploadedFile() file: Express.Multer.File,
         @Body('folder') folder: string,
+        @Body('medicalId') medicalId: string,
         @Req() req
     ): Promise<any> {
 
@@ -127,55 +129,59 @@ export class CloudinaryController {
             await this.cloudinaryService.slashFolder(folder)
         }
 
-        const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + folder)
+        const data = await this.cloudinaryService.uploadFile(file, '/healthline/users/' + req.user.id + '/records/' + medicalId + '/' + folder)
 
-        const amqp = await this.amqpConnection.publish(
-            'healthline.upload.folder',
-            'upload',
-            { data, user: req.user.id, folder: folder }
-        )
+        const rabbit = await this.amqpConnection.request<any>({
+            exchange: 'healthline.upload.folder',
+            routingKey: 'upload',
+            payload: { data, user: req.user.id, folder: folder, medicalId: medicalId },
+            timeout: 10000,
+        })
 
-        return data
+        return rabbit
+    }
+
+    @Put('blog')
+    @UseInterceptors(FileInterceptor('file'))
+    async addNewBlog(
+        @UploadedFile() file: Express.Multer.File,
+        @Body('dto') dto: any,
+    ): Promise<any> {
+        const blog: BlogDto = JSON.parse(dto)
+        if(blog.title == "" || blog.content == "" || !blog.title || !blog.content)
+            throw new BadRequestException("title_or_content_not_null")
+
+        if((blog.id === "" || !blog.id) && !file) {
+            throw new BadRequestException("image_not_null")
+        } else if(blog.id !== "" && !file) {
+            blog.photo = ""
+        } else {
+            const data = await this.cloudinaryService.uploadFile(file, '/healthline/blog')
+            blog.photo = (data as any).public_id || ""
+        }
+
+        const rabbit = await this.amqpConnection.request<any>({
+            exchange: 'healthline.upload.folder',
+            routingKey: 'upload_blog',
+            payload: blog,
+            timeout: 10000,
+        })
+
+        return rabbit
     }
 
     @UseGuards(UserGuard)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'xóa thư mục và tất cả tài liệu trong medical_record của người dùng' })
-    @Delete('user/record/:folder')
+    @Delete('/user/record')
     async deleteUserFolder(
-        @Param('folder') folder: string,
+        @Body() dto: FolderDto,
         @Req() req
     ) {
-        if (!folder)
-            folder = '/default'
-        else {
-            await this.cloudinaryService.slashFolder(folder)
-            folder = '/' + folder
-        }
+        await this.cloudinaryService.slashFolder(dto.folder)
 
-        const path = 'healthline/users/' + req.user.id + '/records' + folder
+        const path = 'healthline/users/' + req.user.id + '/records/' + dto.medicalId + '/' + dto.folder
         return await this.cloudinaryService.deleteFolder(path)
     }
 
-    @UseGuards(UserGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Xóa tài liệu từ thư mục trong medical_record' })
-    @Delete('user/record/:folder/:public_id')
-    async deleteUserRecord(
-        @Param('public_id') public_id: string,
-        @Param('folder') folder: string,
-        @Req() req
-    ) {
-        await this.cloudinaryService.slashFolder(public_id)
-
-        if (!folder)
-            folder = '/default'
-        else {
-            await this.cloudinaryService.slashFolder(folder)
-            folder = '/' + folder
-        }
-
-        const path = 'healthline/users/' + req.user.id + '/records' + folder + '/' + public_id
-        return await this.cloudinaryService.deleteFile(path)
-    }
 }

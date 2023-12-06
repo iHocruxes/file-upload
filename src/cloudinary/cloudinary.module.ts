@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CloudinaryService } from './services/cloudinary.service';
 import { CloudinaryController } from './controllers/cloudinary.controller';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { CloudinaryConsumer } from './consumers/cloudinary.consumer';
 
 @Module({
     imports: [
@@ -17,6 +18,6 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
         }),
     ],
     controllers: [CloudinaryController],
-    providers: [CloudinaryService]
+    providers: [CloudinaryService, CloudinaryConsumer]
 })
 export class NestCloudinaryModule { }
