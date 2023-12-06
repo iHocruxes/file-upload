@@ -36,7 +36,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe())
 
   app.enableCors({
-    origin: 'https://healthline.vn',
+    // origin: 'https://healthline.vn',
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true
   })
