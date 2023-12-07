@@ -156,7 +156,7 @@ export class CloudinaryController {
         } else if(blog.id !== "" && !file) {
             blog.photo = ""
         } else {
-            const data = await this.cloudinaryService.uploadImage(file, '/healthline/blog', '')
+            const data = await this.cloudinaryService.uploadImage(file, file.originalname, '/healthline/blog')
             blog.photo = (data as any).public_id || ""
         }
 
