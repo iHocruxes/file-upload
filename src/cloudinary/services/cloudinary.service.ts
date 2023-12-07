@@ -7,6 +7,9 @@ const toStream = require('buffer-to-stream')
 
 dotenv.config();
 
+// import { Meilisearch } from 'meilisearch';
+// import * as mock from 'mock.json'
+
 @Injectable()
 export class CloudinaryService {
     constructor(
@@ -14,6 +17,12 @@ export class CloudinaryService {
         cloudinary.config({
             ...cloudinaryOption
         });
+        // const client = new Meilisearch({
+        //     host: 'https://meilisearch-truongne.koyeb.app/',
+        //     apiKey: 'CHOPPER_LOVE_MEILISEARCH'
+        // })
+
+        // client.index('mock').addDocuments(mock).then((res) => console.log(res))
     }
 
     async uploadImage(file: Express.Multer.File, public_id: string, folder: string) {

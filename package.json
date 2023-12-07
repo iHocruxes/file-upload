@@ -36,6 +36,7 @@
     "class-validator": "^0.14.0",
     "cloudinary": "^1.40.0",
     "dotenv": "^16.3.1",
+    "meilisearch": "^0.36.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
