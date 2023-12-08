@@ -47,7 +47,7 @@ export class CloudinaryService {
     async uploadFile(file: Express.Multer.File, folder: string) {
         return new Promise((resolve, reject) => {
             const upload = cloudinary.uploader.upload_stream({
-                overwrite: true,
+                // overwrite: true,
                 public_id: file.originalname,
                 folder: folder,
                 resource_type: 'auto',
@@ -66,7 +66,7 @@ export class CloudinaryService {
 
     async deleteFile(public_id: string) {
         const result = await cloudinary.uploader.destroy(public_id)
-        if(result.result === "ok")
+        if (result.result === "ok")
             return true
         return false
     }
