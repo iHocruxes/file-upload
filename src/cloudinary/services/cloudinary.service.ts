@@ -29,7 +29,7 @@ export class CloudinaryService {
         return new Promise((resolve, reject) => {
             const upload = cloudinary.uploader.upload_stream({
                 public_id: public_id,
-                overwrite: true,
+                overwrite: false,
                 folder: folder,
                 resource_type: 'image',
                 invalidate: true
@@ -47,7 +47,7 @@ export class CloudinaryService {
     async uploadFile(file: Express.Multer.File, folder: string) {
         return new Promise((resolve, reject) => {
             const upload = cloudinary.uploader.upload_stream({
-                // overwrite: true,
+                overwrite: true,
                 public_id: file.originalname,
                 folder: folder,
                 resource_type: 'auto',
