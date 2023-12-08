@@ -18,7 +18,7 @@ export class CloudinaryConsumer {
             if(await this.cloudinaryService.deleteFile(public_ids[i]) === false)
                 return {
                     "code": 400,
-                    "message": "delete_patient_record_failed",
+                    "message": "delete_file_failed",
                 }
         return {
             "code": 200,
