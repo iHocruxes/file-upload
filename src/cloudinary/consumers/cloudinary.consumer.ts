@@ -27,7 +27,7 @@ export class CloudinaryConsumer {
     }
 
     @RabbitRPC({
-        exchange: 'healthline.upload.folder',
+        exchange: 'healthline.forum',
         routingKey: 'delete_blog', 
         queue: 'delete_blog',
     })

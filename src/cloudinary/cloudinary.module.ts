@@ -11,6 +11,10 @@ import { CloudinaryConsumer } from './consumers/cloudinary.consumer';
                 {
                     name: 'healthline.upload.folder',
                     type: 'direct'
+                },
+                {
+                    name: 'healthline.forum',
+                    type: 'direct'
                 }
             ],
             uri: process.env.RABBITMQ_URL,
