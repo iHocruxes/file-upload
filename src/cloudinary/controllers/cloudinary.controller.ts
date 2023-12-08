@@ -7,6 +7,7 @@ import { UserGuard } from "../../auth/guards/user.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { FolderDto } from "../dtos/folder.dto";
 import { BlogDto } from "../dtos/blog.dto";
+import { AdminGuard } from "src/auth/guards/admin.guard";
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
@@ -113,7 +114,6 @@ export class CloudinaryController {
             },
         },
     })
-
     @Put('user/record')
     @UseInterceptors(FileInterceptor('file'))
     async uploadUserRecord(
@@ -141,6 +141,8 @@ export class CloudinaryController {
         return rabbit
     }
 
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
     @Put('blog')
     @UseInterceptors(FileInterceptor('file'))
     async addNewBlog(
