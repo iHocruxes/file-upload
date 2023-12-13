@@ -7,7 +7,8 @@ import { UserGuard } from "../../auth/guards/user.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { FolderDto } from "../dtos/folder.dto";
 import { BlogDto } from "../dtos/blog.dto";
-import { AdminGuard } from "src/auth/guards/admin.guard";
+import { AdminGuard } from "../../auth/guards/admin.guard";
+import { PostDto } from "../dtos/post.dto";
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
@@ -166,6 +167,46 @@ export class CloudinaryController {
             exchange: 'healthline.upload.folder',
             routingKey: 'upload_blog',
             payload: blog,
+            timeout: 10000,
+        })
+
+        return rabbit
+    }
+
+    @UseGuards(UserGuard || DoctorGuard)
+    @ApiBearerAuth()
+    @Put('post')
+    @UseInterceptors(FileInterceptor('file'))
+    async addNewPost(
+        @UploadedFile() files: Express.Multer.File[],
+        @Body('dto') dto: any,
+        @Req() req
+    ): Promise<any> {
+        const post: PostDto = JSON.parse(dto)
+        if(post.description == "" || !post.description)
+            throw new BadRequestException("description_not_null")
+
+        if((post.id === "" || !post.id) && files.length === 0) {
+            throw new BadRequestException("images_not_null")
+        } else if(post.id !== "" && !files) {
+            post.photo = []
+        } else {
+            if(files.length > 5) {
+                throw new BadRequestException("images_out_of_permission")
+            } else {
+                const photos = []
+                for(var file of files) {
+                    const data = await this.cloudinaryService.uploadImage(file, file.originalname, '/healthline/post' + req.user.id)
+                    photos.push((data as any).public_id || "")
+                }
+                post.photo = photos
+            }
+        }
+
+        const rabbit = await this.amqpConnection.request<any>({
+            exchange: 'healthline.upload.folder',
+            routingKey: 'upload_post',
+            payload: post,
             timeout: 10000,
         })
 
