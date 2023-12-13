@@ -1,7 +1,7 @@
-import { Controller, Inject, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param, Post, Patch } from "@nestjs/common";
+import { Controller, Inject, UseInterceptors, UploadedFile, Body, Put, UseGuards, Req, BadRequestException, Delete, Param, Post, Patch, UploadedFiles } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHideProperty, ApiOperation, ApiParam, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CloudinaryService } from "../services/cloudinary.service";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UserGuard } from "../../auth/guards/user.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
@@ -176,9 +176,9 @@ export class CloudinaryController {
     @UseGuards(UserGuard || DoctorGuard)
     @ApiBearerAuth()
     @Put('post')
-    @UseInterceptors(FileInterceptor('files'))
+    @UseInterceptors(FilesInterceptor('files'))
     async addNewPost(
-        @UploadedFile() files: Express.Multer.File[],
+        @UploadedFiles() files: Array<Express.Multer.File>,
         @Body('dto') dto: any,
         @Req() req
     ): Promise<any> {
@@ -186,9 +186,7 @@ export class CloudinaryController {
         if(post.description == "" || !post.description)
             throw new BadRequestException("description_not_null")
 
-        if((post.id === "" || !post.id) && files.length === 0) {
-            throw new BadRequestException("images_not_null")
-        } else if(post.id !== "" && !files) {
+        if(files.length === 0) {
             post.photo = []
         } else {
             if(files.length > 5) {
@@ -200,9 +198,10 @@ export class CloudinaryController {
                     photos.push((data as any).public_id || "")
                 }
                 post.photo = photos
-                post.userId = req.user.id
             }
         }
+
+        post.userId = req.user.id
 
         const rabbit = await this.amqpConnection.request<any>({
             exchange: 'healthline.upload.folder',
