@@ -10,5 +10,7 @@ export class PostDto {
     @ApiProperty({ example: 'mô tả bài đăng' })
     description: string
 
+    userId: string
+
     photo: string[]
 }

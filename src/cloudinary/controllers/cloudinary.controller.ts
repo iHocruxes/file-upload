@@ -196,10 +196,11 @@ export class CloudinaryController {
             } else {
                 const photos = []
                 for(var file of files) {
-                    const data = await this.cloudinaryService.uploadImage(file, file.originalname, '/healthline/post' + req.user.id)
+                    const data = await this.cloudinaryService.uploadImage(file, file.originalname, '/healthline/post/' + req.user.id)
                     photos.push((data as any).public_id || "")
                 }
                 post.photo = photos
+                post.userId = req.user.id
             }
         }
 
