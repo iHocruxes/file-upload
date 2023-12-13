@@ -176,7 +176,7 @@ export class CloudinaryController {
     @UseGuards(UserGuard || DoctorGuard)
     @ApiBearerAuth()
     @Put('post')
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileInterceptor('files'))
     async addNewPost(
         @UploadedFile() files: Express.Multer.File[],
         @Body('dto') dto: any,
