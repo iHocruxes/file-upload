@@ -163,6 +163,9 @@ export class CloudinaryController {
             blog.photo = (data as any).public_id || ""
         }
 
+        if(!blog.tag)
+            blog.tag = []
+
         const rabbit = await this.amqpConnection.request<any>({
             exchange: 'healthline.upload.folder',
             routingKey: 'upload_blog',

@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class BlogDto {
@@ -10,6 +10,10 @@ export class BlogDto {
     @IsNotEmpty()
     @ApiProperty({ example: 'Tiêu đề blog' })
     title: string
+
+    @IsArray()
+    @ApiProperty({ example: '[]' })
+    tag: string[]
 
     @IsString()
     @IsNotEmpty()
