@@ -9,6 +9,7 @@ import { FolderDto } from "../dtos/folder.dto";
 import { BlogDto } from "../dtos/blog.dto";
 import { AdminGuard } from "../../auth/guards/admin.guard";
 import { PostDto } from "../dtos/post.dto";
+import { UserDoctorGuard } from "../../auth/guards/user_doctor.guard";
 @ApiTags('CLOUDINARY')
 @Controller()
 export class CloudinaryController {
@@ -176,7 +177,7 @@ export class CloudinaryController {
         return rabbit
     }
 
-    @UseGuards(UserGuard || DoctorGuard)
+    @UseGuards(UserDoctorGuard)
     @ApiBearerAuth()
     @Put('post')
     @UseInterceptors(FilesInterceptor('files'))
