@@ -228,7 +228,22 @@ export class CloudinaryController {
         await this.cloudinaryService.slashFolder(dto.folder)
 
         const path = 'healthline/users/' + req.user.id + '/records/' + dto.medicalId + '/' + dto.folder
-        return await this.cloudinaryService.deleteFolder(path)
+        const result = await this.cloudinaryService.deleteFolder(path)
+         
+        if(result.deleted.length === 0) {
+            return {
+                code: 400,
+                message: 'remove_patient_record_failed'
+            }
+        }
+        const rabbit = await this.amqpConnection.request<any>({
+            exchange: 'healthline.upload.folder',
+            routingKey: 'folder',
+            payload: dto,
+            timeout: 10000,
+        })
+
+        return rabbit
     }
 
 }
