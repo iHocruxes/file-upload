@@ -64,8 +64,18 @@ export class CloudinaryService {
     }
 
     async deleteFile(public_id: string) {
-        const result = await cloudinary.uploader.destroy(public_id)
-        if (result.result === "ok")
+        const result_image = await cloudinary.uploader.destroy(public_id, {
+            resource_type: 'image',
+            invalidate: true
+        })
+        if (result_image.result === "ok")
+            return true
+
+        const result_raw = await cloudinary.uploader.destroy(public_id, {
+            resource_type: 'raw',
+            invalidate: true
+        })
+        if (result_raw.result === "ok")
             return true
         return false
     }
